@@ -2,6 +2,9 @@ package com.nikita.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nikita.dto.Word;
+import com.nikita.service.WordGenerator;
+import com.nikita.service.WordSendService;
+import com.nikita.service.WordSender;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -45,6 +48,7 @@ public class ProducerConfiguration {
         var kafkaProducerFactory = new DefaultKafkaProducerFactory<String, Word>(props);
         kafkaProducerFactory.setValueSerializer(new JsonSerializer<>(objectMapper));
         return kafkaProducerFactory;
+
     }
 
     @Bean
@@ -56,4 +60,18 @@ public class ProducerConfiguration {
     public NewTopic topic() {
         return TopicBuilder.name(topicName).partitions(1).build();
     }
+
+    @Bean
+    public WordSender wordSender(NewTopic topic, KafkaTemplate<String, Word> kafkaTemplate) {
+        return new WordSendService(
+                kafkaTemplate,
+                value -> log.info("asked, value:{} ", value),
+                topic.name());
+    }
+
+    @Bean
+    public WordGenerator wordGenerator(WordSender wordSender) {
+        return new WordGenerator(wordSender);
+    }
 }
+

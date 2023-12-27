@@ -7,11 +7,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.function.Consumer;
 
-public class WordSendService {
+public class WordSendService implements WordSender {
     private static final Logger log = LoggerFactory.getLogger(WordSendService.class);
     private final KafkaTemplate<String, Word> kafkaTemplate;
     private final Consumer<Word> sendAsk;
-
     private final String topic;
 
     public WordSendService(KafkaTemplate<String, Word> kafkaTemplate, Consumer<Word> sendAsk, String topic) {
@@ -20,10 +19,8 @@ public class WordSendService {
         this.topic = topic;
     }
 
-    public void send() {
-        WordGenerator generator = new WordGenerator();
-        String slovo = generator.textGenerator();
-        Word word = new Word(slovo);
+    @Override
+    public void send(Word word) {
         try {
             log.info("word:{}", word);
             kafkaTemplate.send(topic, word).whenComplete((result, ex) -> {

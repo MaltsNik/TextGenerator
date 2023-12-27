@@ -2,16 +2,16 @@ application:
   kafka:
     topic: "text-generator"
 
-spring:
-  kafka:
-    producer:
-      bootstrap-servers: "127.0.0.1:9092"
-      client-id: "text-producer"
-
 feign:
   client:
     config:
       default:
         connectTimeout: 5000
         readTimeout: 5000
+
+#spring:
+#  kafka:
+#    producer:
+#      bootstrap-servers: "127.0.0.1:9092"
+#      client-id: "text-producer"
 
