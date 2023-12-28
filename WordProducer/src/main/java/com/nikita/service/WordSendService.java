@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 public class WordSendService implements WordSender {
     private static final Logger log = LoggerFactory.getLogger(WordSendService.class);
     private final KafkaTemplate<String, Word> kafkaTemplate;
+
     private final Consumer<Word> sendAsk;
     private final String topic;
 

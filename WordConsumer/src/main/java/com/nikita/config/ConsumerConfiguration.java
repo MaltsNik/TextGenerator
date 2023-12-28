@@ -8,7 +8,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -29,9 +28,12 @@ import java.util.Map;
 public class ConsumerConfiguration {
     private static final Logger log = LoggerFactory.getLogger(ConsumerConfiguration.class);
     public final String topicName;
+    public final String bootstrapAddress;
 
-    public ConsumerConfiguration(@Value("${application.kafka.topic}") String topicName) {
+    public ConsumerConfiguration(@Value("${spring.kafka.topic}") String topicName,
+                                 @Value("${spring.kafka.consumer.bootstrap-server}") String bootstrapAddress) {
         this.topicName = topicName;
+        this.bootstrapAddress = bootstrapAddress;
     }
 
     @Bean
@@ -40,9 +42,9 @@ public class ConsumerConfiguration {
     }
 
     @Bean
-    public ConsumerFactory<String, Word> consumerFactory(KafkaProperties kafkaProperties, ObjectMapper objectMapper) {
+    public ConsumerFactory<String, Word> consumerFactory(ObjectMapper objectMapper) {
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.nikita.repository.entity.Word");
@@ -57,7 +59,7 @@ public class ConsumerConfiguration {
         return kafkaConsumerFactory;
     }
 
-    @Bean("listenerContainerFactory")
+    @Bean()
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Word>> listenerContainerFactory(
             ConsumerFactory<String, Word> consumerFactory) {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, Word>();
@@ -77,6 +79,4 @@ public class ConsumerConfiguration {
     public NewTopic topic() {
         return TopicBuilder.name(topicName).partitions(1).replicas(1).build();
     }
-
 }
-

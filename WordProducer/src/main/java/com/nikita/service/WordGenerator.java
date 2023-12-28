@@ -4,22 +4,22 @@ import com.nikita.dto.Word;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
-@Service
 public class WordGenerator {
     private static final Logger log = LoggerFactory.getLogger(WordGenerator.class);
-    private final WordSender sender;
+    private final WordSender wordClient;
 
-    public WordGenerator(WordSender sender) {
-        this.sender = sender;
+    public WordGenerator(WordSender wordClient) {
+        this.wordClient = wordClient;
     }
 
     @Scheduled(fixedDelay = 3000)
     public void generate() {
-        sender.send(textGenerator());
+        Word word = textGenerator();
+        log.info("word to send - " + word.toString());
+        wordClient.send(textGenerator());
         log.info("generation started");
     }
 
@@ -34,4 +34,3 @@ public class WordGenerator {
         return new Word(word.toString());
     }
 }
-

@@ -1,8 +1,5 @@
-application:
-  kafka:
-    topic: "text-generator"
-
 spring:
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/text-generator-db
@@ -15,8 +12,9 @@ spring:
       show_sql: true
 
   kafka:
+    topic: "text-generator"
     consumer:
       group-id: "test-group"
-      bootstrap-servers: "localhost:9092"
+      bootstrap-server: "localhost:9092"
       client-id: "text-consumer"
       auto-offset-reset: earliest

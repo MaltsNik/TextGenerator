@@ -17,10 +17,10 @@ public class WordService {
     }
 
     @Transactional
-    @KafkaListener(topics = ("${application.kafka.topic}"), groupId = ("$application.spring.kafka.consumer.group-id"),
+    @KafkaListener(topics = ("${spring.kafka.topic}"), groupId = ("${spring.kafka.consumer.group-id}"),
             containerFactory = "listenerContainerFactory")
-    public void saveWord(Word word) {
+    public Word saveWord(Word word) {
         word.setReceivedDate(LocalDateTime.now());
-        wordRepository.save(word);
+        return wordRepository.save(word);
     }
 }

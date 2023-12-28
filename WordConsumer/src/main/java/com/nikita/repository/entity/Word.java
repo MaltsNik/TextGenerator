@@ -48,4 +48,3 @@ public class Word {
         this.receivedDate = receivedDate;
     }
 }
-
