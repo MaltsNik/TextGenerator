@@ -1,17 +1,17 @@
-application:
+spring:
+  sendTypeKafka: "sendKafka"
   kafka:
     topic: "text-generator"
-
-spring:
-  kafka:
     producer:
-      bootstrap-servers: "127.0.0.1:9092"
-      client-id: "text-producer"
+      bootstrap-server: "localhost:9092"
 
-feign:
-  client:
-    config:
-      default:
-        connectTimeout: 5000
-        readTimeout: 5000
-
+  sendTypeFeign: "sendFeign"
+  cloud:
+    openfeign:
+      client:
+        config:
+          word:
+            url: http://localhost:8080
+logging:
+  level:
+    feign: DEBUG
